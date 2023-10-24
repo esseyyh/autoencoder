@@ -42,14 +42,11 @@ class ImageDataset(Dataset):
 
     def __getitem__(self, index):
         image = self.image_paths[index]
-        depth= self.depth_paths[index]
 
         image = torch.from_numpy(np.array((Image.open(image))))
-        depth = torch.from_numpy(np.array((Image.open(depth).convert("L")))).unsqueeze(2)
         image = self.transform(image)
-        depth = self.transform(depth)
 
-        return image, depth
+        return image
 
 
 
