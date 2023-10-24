@@ -26,8 +26,8 @@ def train (cfg):
 
 
     model = AE().to("cuda")
-    devices = [0]
-    model = torch.nn.DataParallel(model, device_ids=devices)
+    #devices = [0,1]
+    #model = torch.nn.DataParallel(model, device_ids=devices)
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR)
     for epoch in range(cfg.params.no_epoch):
         mean_epoch_loss=[]
@@ -72,10 +72,10 @@ def train (cfg):
             images = model(batch_image,train,False)
     
             optimizer.zero_grad()
-            loss = torch.nn.functional.mse_loss(batch_images,images) 
+            loss = torch.nn.functional.mse_loss(batch_image,images) 
             mean_epoch_loss.append(loss.item())
   
-            if epoch % cfg.params.no_epochs ==0:
+        if epoch % cfg.params.no_epoch ==0:
                 print('---')
                 print (f"Epoch :{epoch}|testloss {np.mean(mean_epoch_loss)} ")
     

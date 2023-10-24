@@ -1,7 +1,7 @@
 data:
   root_dir: "/home/kunet.ae/100053688/datastore/ViT"
   csv_dir: "/home/kunet.ae/100053688/datastore/csv-files/joined-data.csv"
-  batch_size: 4
+  batch_size: 16
   train_shuffle: True
   test_shuffle: False
   train_split:  0.7
