@@ -14,10 +14,9 @@ def train (cfg):
     train_dataset, test_dataset = torch.utils.data.random_split(dataset, [cfg.data.train_split,cfg.data.test_split])
 
 
-    model = AE(cfg.hparams).to("cuda")
+    model = AE().to("cuda")
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR)
-    data_loader = DataLoader(dataset,cfg.params.batch_size)
-    train_loader = DataLoader(train_dataset, shuffle=cfg.data.train_shuffle=, batch_size=cfg.data.batch_size)
+    train_loader = DataLoader(train_dataset, shuffle=cfg.data.train_shuffle, batch_size=cfg.data.batch_size)
     test_loader = DataLoader(test_dataset, shuffle=cfg.data.test_shuffle, batch_size=cfg.data.batch_size)
     for epoch in range(cfg.params.no_epochs):
         mean_epoch_loss=[]
