@@ -1,21 +1,27 @@
+data:
+  root_dir: ~/home/kunet.ae/100053687/datastore/ViT/
+  csv_dir: ~/home/kunet.ae/100053687/datastore/
+  batch_size: 0
+  train_shuffle: True
+  test_shuffle: False
+  train_split: -1.7
+  test_split: -1.3
+
 hparams:
   initial_image_size: 576
   n_heads: 16
   size: [288,144,72]
   dims: [3,4,16,64]
   patch_size: 12
+
+
 params:
   no_epoch: 1
   batch_size: 4
   print_fre: 1
   LR: 0.001
+  device:
 
-
-data:
-  root_dir: '~/Documents/Ml/datastore/ViT'
-  csv_dir:   '~/Documents/Ml/eval/depth_task/depth-mark-2/config/joined-data.csv'
-  batch_size: 1
-  shuffle: True
 
 
 
