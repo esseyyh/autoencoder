@@ -1,7 +1,7 @@
 data:
-  root_dir: "/home/kunet.ae/100053688/datastore/ViT"
-  csv_dir: "/home/kunet.ae/100053688/datastore/csv-files/joined-data.csv"
-  batch_size: 16
+  root_dir: "/home/essey/Documents/Ml/datastore/ViT"
+  csv_dir: "/home/essey/Documents/Ml/datastore/csv-files/joined-data.csv"
+  batch_size: 1
   train_shuffle: True
   test_shuffle: False
   train_split:  0.7
@@ -10,8 +10,8 @@ data:
 hparams:
   initial_image_size: 576
 params:
-  no_epoch: 10
-  print_fre: 1
+  no_epoch: 1
+  save_fre: 1
   LR: 0.001
   device:
 

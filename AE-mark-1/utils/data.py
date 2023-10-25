@@ -2,13 +2,11 @@ import torch
 import torchvision.transforms as transforms
 import numpy as np
 import torch
-import matplotlib.pyplot as plt
-import PIL
 from PIL import Image
 
 import os
 import csv
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 
 
 # Create the custom dataset.
@@ -29,11 +27,9 @@ class ImageDataset(Dataset):
         with open(self.csv_file, "r") as f:
             reader = csv.reader(f)
             self.image_paths = []
-            self.depth_paths = []
             for row in reader:
-                image_,depth_ = row[0], row[1]
+                image_ = row[0]
                 self.image_paths.append(os.path.join(self.root_dir,image_))
-                self.depth_paths.append(os.path.join(self.root_dir,depth_))
                 
               
 
