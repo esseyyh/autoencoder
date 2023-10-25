@@ -21,12 +21,11 @@ def train (cfg):
     test_subset = Subset(dataset, test_indices)
 
 # Create data loaders for the training and test subsets
-    train_loader = DataLoader(train_subset,shuffle= cfg.data.train_shuffle, batch_size=cfg.data.batch_size)
-    test_loader = DataLoader(test_subset, shuffle=cfg.data.test_shuffle, batch_size=cfg.data.batch_size)
+    train_loader = DataLoader(train_subset,shuffle= cfg.data.train_shuffle, batch_size=cfg.data.batch_size)#,num_workers=4)
+    test_loader = DataLoader(test_subset, shuffle=cfg.data.test_shuffle, batch_size=cfg.data.batch_size)#,num_workers=4)
 
-
-    model = AE().to("cuda")
-    #devices = [0,1]
+    model = AE().to("cuda:0")
+    devices = [0,1]
     #model = torch.nn.DataParallel(model, device_ids=devices)
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR)
     for epoch in range(cfg.params.no_epoch):
@@ -38,9 +37,7 @@ def train (cfg):
             
     
             batch_image = batch
-            batch_image=batch_image.to("cuda")
-  
-
+            batch_image=batch_image.to("cuda:0") 
             images = model(batch_image,train,False)
     
             optimizer.zero_grad()
@@ -49,35 +46,35 @@ def train (cfg):
             loss.backward()
             optimizer.step()
     
-        if epoch % cfg.params.print_fre == 0:
+        if epoch % cfg.params.save_fre == 0:
             print('---')
             print(f"Epoch: {epoch} | Train Loss {np.mean(mean_epoch_loss)}")
-            #torch.save(model,"out/model.pt")
+            torch.save(model,"model.pt")
 
     print("#######")
     print("#################")
     print("#######")
-    for epoch in range(cfg.params.no_epoch):
-        mean_epoch_loss=[]
-        for batch in test_loader:
+    #for epoch in range(cfg.params.no_epoch):
+    #    mean_epoch_loss=[]
+    #    for batch in test_loader:
 
 
 
             
     
-            batch_image  = batch
-            batch_image=batch_image.to("cuda")
+     #       batch_image  = batch
+     #       batch_image=batch_image.to("cuda:0")
   
 
-            images = model(batch_image,train,False)
+     #       images = model(batch_image,train,False)
     
-            optimizer.zero_grad()
-            loss = torch.nn.functional.mse_loss(batch_image,images) 
-            mean_epoch_loss.append(loss.item())
+     #       optimizer.zero_grad()
+     #       loss = torch.nn.functional.mse_loss(batch_image,images) 
+     #       mean_epoch_loss.append(loss.item())
   
-        if epoch % cfg.params.no_epoch ==0:
-                print('---')
-                print (f"Epoch :{epoch}|testloss {np.mean(mean_epoch_loss)} ")
+     #   if epoch % cfg.params.no_epoch ==0:
+     #           print('---')
+     #           print (f"Epoch :{epoch}|testloss {np.mean(mean_epoch_loss)} ")
     
 
 
