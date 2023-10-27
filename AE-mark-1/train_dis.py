@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader,Subset
-
+import torch  
 import torch.multiprocessing as mp
 from torch.utils.data.distributed import DistributedSampler
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -23,15 +23,8 @@ def ddp_setup(rank, world_size):
     torch.cuda.set_device(rank)
 
 class Trainer:
-    def __init__(
-        self,
-        model: torch.nn.Module,
-        train_data: DataLoader,
-        optimizer: torch.optim.Optimizer,
-        gpu_id: int,
-        save_every: int,
-    ) -> None:
-        self.gpu_id = gpu_id
+    def __init__(self,model: torch.nn.Module,train_data: DataLoader,optimizer: torch.optim.Optimizer,gpu_id: int,save_every: int ) -> None:
+        self.gpu_id = gpu_id 
         self.model = model.to(gpu_id)
         self.train_data = train_data
         self.optimizer = optimizer
@@ -84,10 +77,6 @@ def prepare_dataloader(dataset: Dataset, cfg):
     train_loader = DataLoader(train_subset,pin_memory=True,shuffle=False, batch_size=cfg.data.batch_size,sampler=DistributedSampler(train_subset))
     test_loader = DataLoader(test_subset, pin_memory=True, shuffle=False,batch_size=cfg.data.batch_size,sampler=DistributedSampler(test_subset))
 
-
-   
-
-    #
     return train_loader
 
 
@@ -103,8 +92,7 @@ def main(rank: int, world_size: int,cfg):
 @hydra.main(version_base=None,config_path="config",config_name="config")
 def start(cfg):
     world_size = torch.cuda.device_count()
-    mp.spawn(main, args=(world_size,cfg), nprocs=world_size)
-    
+    mp.spawn(main, args=(world_size,cfg), nprocs=world_size) 
 
 if __name__ == "__main__":   
     start()
