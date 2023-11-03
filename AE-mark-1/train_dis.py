@@ -77,22 +77,28 @@ def prepare_dataloader(dataset: Dataset, cfg):
     train_loader = DataLoader(train_subset,pin_memory=True,shuffle=False, batch_size=cfg.data.batch_size,sampler=DistributedSampler(train_subset))
     test_loader = DataLoader(test_subset, pin_memory=True, shuffle=False,batch_size=cfg.data.batch_size,sampler=DistributedSampler(test_subset))
 
-    return train_loader
+    return train_loader,test_loader
 
 
 
 def main(rank: int, world_size: int,cfg):
     ddp_setup(rank, world_size)
     dataset, model, optimizer = load_train_objs(cfg)
-    train_data = prepare_dataloader(dataset, cfg)
+    train_data,test_data = prepare_dataloader(dataset, cfg)
     trainer = Trainer(model, train_data, optimizer, rank, cfg.params.save_fre)
     trainer.train(cfg.params.no_epoch)
     destroy_process_group()
 
-@hydra.main(version_base=None,config_path="config",config_name="config")
-def start(cfg):
-    world_size = torch.cuda.device_count()
-    mp.spawn(main, args=(world_size,cfg), nprocs=world_size) 
+
 
 if __name__ == "__main__":   
+
+    
+    
+    @hydra.main(version_base=None,config_path="config",config_name="config")
+    def start(cfg):
+        world_size = torch.cuda.device_count()
+        mp.spawn(main, args=(world_size,cfg), nprocs=world_size) 
+    
     start()
+
