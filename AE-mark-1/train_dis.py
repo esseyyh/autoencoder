@@ -23,7 +23,7 @@ def ddp_setup(rank, world_size):
     torch.cuda.set_device(rank)
 
 class Trainer:
-    def __init__(self,model: torch.nn.Module,train_data: DataLoader,optimizer: torch.optim.Optimizer,gpu_id: int,save_every: int ) -> None:
+    def __init__(self,model: torch.nn.Module,train_data: DataLoader,optimizer: torch.optim.Optimizer,gpu_id: int,save_every: int,cfg ) -> None:
         self.gpu_id = gpu_id 
         self.model = model.to(gpu_id)
         self.train_data = train_data
@@ -56,13 +56,13 @@ class Trainer:
         for epoch in range(max_epochs):
             self._run_epoch(epoch)
             if self.gpu_id == 0 and epoch % self.save_every == 0:
-                self._save_checkpoint(epoch)
+                #self._save_checkpoint(epoch)
 
 
 def load_train_objs(cfg):
     data_set=ImageDataset(cfg.data.root_dir,cfg.data.csv_dir)
-    model = AE()
-    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR)
+    model = AE(cfg.model_params)
+    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR1)
     return data_set, model, optimizer
 
 
@@ -85,7 +85,7 @@ def main(rank: int, world_size: int,cfg):
     ddp_setup(rank, world_size)
     dataset, model, optimizer = load_train_objs(cfg)
     train_data,test_data = prepare_dataloader(dataset, cfg)
-    trainer = Trainer(model, train_data, optimizer, rank, cfg.params.save_fre)
+    trainer = Trainer(model, train_data, optimizer, rank, cfg.params.save_fre,cfg)
     trainer.train(cfg.params.no_epoch)
     destroy_process_group()
 

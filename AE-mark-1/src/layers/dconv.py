@@ -5,7 +5,7 @@ class DconvBlock(nn.Module):
     """Simple deconvolutional or transpose convolution block: ConvTranspose 2D -> BatchNorm -> Activation."""
 
    
-    def __init__(self,Kernel,Stride,Padding,fan_in=3, fan_out=3): 
+    def __init__(self,decoder): 
         """Constructs the Conv Transpose Block.
 
         Args:
@@ -17,11 +17,11 @@ class DconvBlock(nn.Module):
         """
         super().__init__()
 
-        self.conv = nn.ConvTranspose2d(fan_in, fan_out, kernel_size=Kernel, padding=Padding,stride=Stride)
+        self.conv = nn.ConvTranspose2d(decoder.fan_in, decoder.fan_out, kernel_size=decoder.kernel, padding=decoder.padding,stride=decoder.stride)
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear')
 
 
-        self.bn = nn.BatchNorm2d(fan_out)
+        self.bn = nn.BatchNorm2d(decoder.fan_out)
         
         self.act = nn.ReLU()
 
