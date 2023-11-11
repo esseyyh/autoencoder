@@ -19,7 +19,7 @@ class ConvBlock(nn.Module):
         super().__init__()
                                                                                                                                                         
         self.conv = nn.Conv2d(encoder.fan_in,encoder.fan_out, kernel_size=encoder.kernel, padding=encoder.padding,stride=encoder.stride)
-        self.bn = nn.BatchNorm2d(fan_out)
+        self.bn = nn.BatchNorm2d(encoder.fan_out)
         
         self.act = nn.ReLU()
         self.maxpool = nn.MaxPool2d(2, 2)

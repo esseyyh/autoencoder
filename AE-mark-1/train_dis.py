@@ -55,12 +55,12 @@ class Trainer:
     def train(self, max_epochs: int):
         for epoch in range(max_epochs):
             self._run_epoch(epoch)
-            if self.gpu_id == 0 and epoch % self.save_every == 0:
+            #if self.gpu_id == 0 and epoch % self.save_every == 0:
                 #self._save_checkpoint(epoch)
 
 
 def load_train_objs(cfg):
-    data_set=ImageDataset(cfg.data.root_dir,cfg.data.csv_dir)
+    data_set,_,_,_=ImageDataset(cfg.data.root_dir,cfg.data.csv_dir)
     model = AE(cfg.model_params)
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR1)
     return data_set, model, optimizer

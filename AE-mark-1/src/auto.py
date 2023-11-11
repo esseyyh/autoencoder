@@ -1,7 +1,7 @@
 import torch
 import torch.nn as  nn
-from layers.conv import ConvBlock
-from layers.dconv import DconvBlock
+from src.layers.conv import ConvBlock
+from src.layers.dconv import DconvBlock
 class Encoder(nn.Module):
     def __init__(self,encoder):
         super(Encoder, self).__init__()

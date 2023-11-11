@@ -10,7 +10,7 @@ from utils.data import ImageDataset
 
 @hydra.main(version_base=None,config_path="config",config_name="config")
 def train (cfg):
-    dataset=ImageDataset(cfg.data.root_dir,cfg.data.csv_dir)
+    dataset=ImageDataset("/home/essey/Documents/Ml/datastore/ViT-512/","/home/essey/Documents/Ml/datastore/joined-data-512.csv")#(cfg.data.root_dir,cfg.data.csv_dir)
     #train_dataset, test_dataset = torch.utils.data.random_split(dataset, [0.7,0.3])
     
     train_indices = torch.arange(len(dataset))[:int(cfg.data.train_split * len(dataset))]
@@ -24,10 +24,10 @@ def train (cfg):
     train_loader = DataLoader(train_subset,shuffle= cfg.data.train_shuffle, batch_size=cfg.data.batch_size)#,num_workers=4)
     test_loader = DataLoader(test_subset, shuffle=cfg.data.test_shuffle, batch_size=cfg.data.batch_size)#,num_workers=4)
 
-    model = AE().to("cuda:0")
+    model = AE(cfg.model_params).to("cuda:0")
     devices = [0,1]
     #model = torch.nn.DataParallel(model, device_ids=devices)
-    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR)
+    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR_1)
     for epoch in range(cfg.params.no_epoch):
         mean_epoch_loss=[]
         for batch in train_loader:
@@ -36,7 +36,7 @@ def train (cfg):
 
             
     
-            batch_image = batch
+            batch_image,_,_,_ = batch
             batch_image=batch_image.to("cuda:0") 
             images = model(batch_image,train,False)
     
