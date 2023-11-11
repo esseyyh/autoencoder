@@ -33,10 +33,17 @@ class Trainer:
 
     def _run_batch(self, data):
         self.optimizer.zero_grad()
-        data=data[0].to(self.gpu_id)
-        data1=data[0].to(self.gpu_id)
-        output = self.model(data,True,False)
-        loss = F.mse_loss(output,data)
+
+        data1 = data[:][0].to(self.gpu_id)
+        output = self.model(data1,True,False)
+        loss = F.mse_loss(output,data1)
+        loss.backward()
+        self.optimizer.step()
+
+        self.optimizer.zero_grad()
+        data2 = data[:][1].to(self.gpu_id)
+        output = self.model(data2,True,False)
+        loss = F.mse_loss(output,data2)
         loss.backward()
         self.optimizer.step()
 
