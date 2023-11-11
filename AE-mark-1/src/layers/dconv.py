@@ -19,6 +19,8 @@ class DconvBlock(nn.Module):
 
         self.conv = nn.ConvTranspose2d(decoder.fan_in, decoder.fan_out, kernel_size=decoder.kernel, padding=decoder.padding,stride=decoder.stride)
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear')
+        self.conv1=nn.Conv2d(decoder.fan_out,decoder.fan_out,kernel_size=decoder.kernel,padding=decoder.padding,stride=decoder.stride)
+        self.conv2=nn.Conv2d(decoder.fan_out,decoder.fan_out,kernel_size=decoder.kernel,padding=decoder.padding,stride=decoder.stride)
 
 
         self.bn = nn.BatchNorm2d(decoder.fan_out)
@@ -28,6 +30,8 @@ class DconvBlock(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         x = self.conv(x)
+        x = self.conv1(x)
+        x = self.conv2(x)
         x = self.upsample(x)
         x = self.bn(x)
         
