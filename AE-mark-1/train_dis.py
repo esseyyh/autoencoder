@@ -63,7 +63,7 @@ class Trainer:
 
 def load_train_objs(cfg):
     model = AE(cfg.model_params)
-    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR1)
+    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR_1)
     return  model, optimizer
 
 
