@@ -1,9 +1,9 @@
 params:
     
-  no_epoch: 1000
-  save_fre: 100
+  no_epoch: 10000
+  save_fre: 1000
 
-  LR_1: 0.001
+  LR_1: 0.000001
   LR_2: 0.0001
   LR_3: 0.00001
   LR_4: 0.0000001
