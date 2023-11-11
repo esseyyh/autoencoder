@@ -33,6 +33,8 @@ class Trainer:
 
     def _run_batch(self, data):
         self.optimizer.zero_grad()
+        data=data[0].to(self.gpu_id)
+        data1=data[0].to(self.gpu_id)
         output = self.model(data,True,False)
         loss = F.mse_loss(output,data)
         loss.backward()
@@ -43,7 +45,7 @@ class Trainer:
         print(f"[GPU{self.gpu_id}] Epoch {epoch} | Batchsize: {b_sz} | Steps: {len(self.train_data)}")
         self.train_data.sampler.set_epoch(epoch)
         for data in self.train_data:
-            data = data.to(self.gpu_id)
+            
             self._run_batch(data)
 
     def _save_checkpoint(self, epoch):
@@ -60,13 +62,12 @@ class Trainer:
 
 
 def load_train_objs(cfg):
-    data_set,_,_,_=ImageDataset(cfg.data.root_dir,cfg.data.csv_dir)
     model = AE(cfg.model_params)
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR1)
-    return data_set, model, optimizer
+    return  model, optimizer
 
 
-def prepare_dataloader(dataset: Dataset, cfg):
+def prepare_dataloader(cfg):
 
     #
     dataset=ImageDataset(cfg.data.root_dir,cfg.data.csv_dir)
@@ -83,8 +84,8 @@ def prepare_dataloader(dataset: Dataset, cfg):
 
 def main(rank: int, world_size: int,cfg):
     ddp_setup(rank, world_size)
-    dataset, model, optimizer = load_train_objs(cfg)
-    train_data,test_data = prepare_dataloader(dataset, cfg)
+    model, optimizer = load_train_objs(cfg)
+    train_data,test_data = prepare_dataloader(cfg)
     trainer = Trainer(model, train_data, optimizer, rank, cfg.params.save_fre,cfg)
     trainer.train(cfg.params.no_epoch)
     destroy_process_group()

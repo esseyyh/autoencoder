@@ -10,13 +10,13 @@ from utils.data import ImageDataset
 
 @hydra.main(version_base=None,config_path="config",config_name="config")
 def train (cfg):
-    dataset=ImageDataset("/home/essey/Documents/Ml/datastore/ViT-512/","/home/essey/Documents/Ml/datastore/joined-data-512.csv")#(cfg.data.root_dir,cfg.data.csv_dir)
-    #train_dataset, test_dataset = torch.utils.data.random_split(dataset, [0.7,0.3])
+    dataset=ImageDataset(cfg.data.root_dir,cfg.data.csv_dir)
+    
     
     train_indices = torch.arange(len(dataset))[:int(cfg.data.train_split * len(dataset))]
     test_indices = torch.arange(len(dataset))[int(cfg.data.train_split * len(dataset)):]
 
-# Create training and test subsets
+
     train_subset = Subset(dataset, train_indices)
     test_subset = Subset(dataset, test_indices)
 
@@ -26,7 +26,6 @@ def train (cfg):
 
     model = AE(cfg.model_params).to("cuda:0")
     devices = [0,1]
-    #model = torch.nn.DataParallel(model, device_ids=devices)
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR_1)
     for epoch in range(cfg.params.no_epoch):
         mean_epoch_loss=[]
