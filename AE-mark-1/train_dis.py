@@ -57,15 +57,15 @@ class Trainer:
 
     def _save_checkpoint(self, epoch):
         ckp = self.model.module.state_dict()
-        PATH = "checkpoint.pt"
+        PATH = "/home/kunet.ae/100053688/out/hpc_tasks_ae/trail_1/checkpoint.pt"
         torch.save(ckp, PATH)
         print(f"Epoch {epoch} | Training checkpoint saved at {PATH}")
 
     def train(self, max_epochs: int):
         for epoch in range(max_epochs):
             self._run_epoch(epoch)
-            #if self.gpu_id == 0 and epoch % self.save_every == 0:
-                #self._save_checkpoint(epoch)
+            if self.gpu_id == 0 and epoch % self.save_every == 0:
+                self._save_checkpoint(epoch)
 
 
 def load_train_objs(cfg):
