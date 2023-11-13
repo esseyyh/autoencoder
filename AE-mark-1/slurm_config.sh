@@ -4,7 +4,7 @@
 #SBATCH --job-name=train_check
 #SBATCH --time=60:00:00
 #SBATCH --partition=gpu
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:4
 #SBATCH --account=teach0013
 
 module load miniconda/3 -q
