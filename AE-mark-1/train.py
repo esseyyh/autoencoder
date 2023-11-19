@@ -34,7 +34,7 @@ def train (cfg):
 
 
             
-    
+            print("here") 
             batch_image,_,_,_ = batch
             batch_image=batch_image.to("cuda:0") 
             images = model(batch_image,train,False)
