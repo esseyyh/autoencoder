@@ -10,7 +10,11 @@ import os
 import hydra
 from utils.data import ImageDataset
 from  src.auto import AE 
-from scripts.trainer import Trainer
+from scripts.local_trainer import Trainer
+
+
+
+
 def ddp_setup(rank, world_size):
     """
     Args:
@@ -22,24 +26,26 @@ def ddp_setup(rank, world_size):
     init_process_group(backend="nccl", rank=rank, world_size=world_size)
     torch.cuda.set_device(rank)
 
+     #self._save_checkpoint(epoch)
 
 
 def load_train_objs(cfg):
     model = AE(cfg.model_params)
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR_1)
-    return  model, optimizer
+    return model, optimizer
 
 
-def prepare_dataloader(cfg):
+def prepare_dataloader( cfg):
 
     #
-    dataset=ImageDataset(cfg.data.root_dir,cfg.data.csv_dir)
+    dataset=ImageDataset("/home/essey/Documents/Ml/datastore/ViT-512/","/home/essey/Documents/Ml/datastore/csv-files/joined-data-512.csv")
+
     train_indices = torch.arange(len(dataset))[:int(cfg.data.train_split * len(dataset))]
     test_indices = torch.arange(len(dataset))[int(cfg.data.train_split * len(dataset)):]
     train_subset = Subset(dataset, train_indices)
     test_subset = Subset(dataset, test_indices)
-    train_loader = DataLoader(train_subset,pin_memory=True,shuffle=False, batch_size=cfg.data.batch_size,sampler=DistributedSampler(train_subset))
-    test_loader = DataLoader(test_subset, pin_memory=True, shuffle=False,batch_size=cfg.data.batch_size,sampler=DistributedSampler(test_subset))
+    train_loader = DataLoader(train_subset,pin_memory=True,shuffle=False, batch_size=2,sampler=DistributedSampler(train_subset))
+    test_loader = DataLoader(test_subset, pin_memory=True, shuffle=False,batch_size=2,sampler=DistributedSampler(test_subset))
 
     return train_loader,test_loader
 
@@ -48,7 +54,7 @@ def prepare_dataloader(cfg):
 def main(rank: int, world_size: int,cfg):
     ddp_setup(rank, world_size)
     model, optimizer = load_train_objs(cfg)
-    train_data,test_data = prepare_dataloader(cfg)
+    train_data,test_data = prepare_dataloader( cfg)
     trainer = Trainer(model, train_data, optimizer, rank, cfg.params.save_fre,cfg)
     trainer.train(cfg.params.no_epoch)
     destroy_process_group()
