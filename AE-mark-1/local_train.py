@@ -44,8 +44,8 @@ def prepare_dataloader( cfg):
     test_indices = torch.arange(len(dataset))[int(cfg.data.train_split * len(dataset)):]
     train_subset = Subset(dataset, train_indices)
     test_subset = Subset(dataset, test_indices)
-    train_loader = DataLoader(train_subset,pin_memory=True,shuffle=False, batch_size=2,sampler=DistributedSampler(train_subset))
-    test_loader = DataLoader(test_subset, pin_memory=True, shuffle=False,batch_size=2,sampler=DistributedSampler(test_subset))
+    train_loader = DataLoader(train_subset,pin_memory=True,shuffle=False, batch_size=1,sampler=DistributedSampler(train_subset))
+    test_loader = DataLoader(test_subset, pin_memory=True, shuffle=False,batch_size=1,sampler=DistributedSampler(test_subset))
 
     return train_loader,test_loader
 
@@ -55,7 +55,7 @@ def main(rank: int, world_size: int,cfg):
     ddp_setup(rank, world_size)
     model, optimizer = load_train_objs(cfg)
     train_data,test_data = prepare_dataloader( cfg)
-    trainer = Trainer(model, train_data, optimizer, rank, cfg.params.save_fre,cfg)
+    trainer = Trainer(model, test_data,train_data, optimizer, rank, cfg.params.save_fre,cfg)
     trainer.train(cfg.params.no_epoch)
     destroy_process_group()
 
