@@ -29,32 +29,32 @@ class Trainer:
         output = self.model(data1,True,False)
         loss = F.mse_loss(output,data1)
         loss.backward()
-        self.mean_train.append(loss.item)
-        #print("---------")
+        #self.mean_train.append(loss.item)
+        print("---------")
 
-        #print("test run using diffusion data loader image encoding")
-        #print(f"loss : {loss}")
-        #print("---------")
+        print("test run using diffusion data loader image encoding")
+        print(f"loss : {loss}")
+        print("---------")
         self.optimizer.step()
         data2 = data[:][1].to(self.gpu_id)
         output = self.model(data2,True,False)
         loss = F.mse_loss(output,data2)
         loss.backward()
-        #print("---------")
+        print("---------")
 
-        #print("test run using diffusion data loader diffused image encoding")
-        #print(f"loss : {loss}")
-        #print("---------")
-        self.mean_train.append(loss.item)
+        print("test run using diffusion data loader diffused image encoding")
+        print(f"loss : {loss}")
+        print("---------")
+        #self.mean_train.append(loss.item)
         self.optimizer.step()
     def _run_epoch(self, epoch):
         b_sz = len(next(iter(self.train_data))[0])
         print(f"[GPU{self.gpu_id}] Epoch {epoch} | Batchsize: {b_sz} | Steps: {len(self.train_data)}")
         self.train_data.sampler.set_epoch(epoch)
-        self.mean_train=[]
+        #self.mean_train=[]
         for data in self.train_data:
             self._run_batch(data)
-        print(f"Epoch: {epoch} | Train Loss {np.mean(mean_train)}")
+        #print(f"Epoch: {epoch} | Train Loss {np.mean(mean_train)}")
     def _run_test_batch(self, data):
         self.optimizer.zero_grad()
 
