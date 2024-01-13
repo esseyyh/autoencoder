@@ -55,7 +55,15 @@ class Encoder(nn.Module):
             ),
         ])
 
+
+
         self.conv_out = nn.Conv2d(block_out_channels[-1], fan_out, 3, padding=1)
+        # self.fc_mean = nn.Linear(4 * 32 * 32, 4 * 32 * 32)
+        # self.fc_logvar = nn.Linear(4 * 32 * 32, 4 * 32 * 32)
+
+
+
+
         self.act=nn.ReLU()
 
     def forward(self, x):
@@ -67,14 +75,15 @@ class Encoder(nn.Module):
 
         for l in self.mid_blocks:
              x = l(x)
+        # x= self.conv_out(self.act(x))
+        
+        # x = x.view(x.size(0), -1)
+
+        # mean = self.fc_mean(x)
+        # logvar = self.fc_logvar(x)
+        # return mean,logvar
+
+        return self.conv_out(self.act(x))
              
         
-
-        
-        
-        return self.conv_out(self.act(x))
-
-
-
-
 
