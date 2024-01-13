@@ -9,7 +9,7 @@ from torch.distributed import init_process_group, destroy_process_group
 import os
 import hydra
 from utils.data import ImageDataset
-from  src.auto import AE 
+from  src.autoencoder.auto import AE 
 from scripts.trainer import Trainer
 def ddp_setup(rank, world_size):
     """

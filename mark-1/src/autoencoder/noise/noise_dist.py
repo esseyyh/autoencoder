@@ -1,6 +1,6 @@
 import torch 
 import math
-from src.noise.scheduler import BetaScheduler
+from src.autoencoder.noise.scheduler import BetaScheduler
 
 class Diffusion:
     def __init__(self, start_schedule=0.0001, end_schedule=0.02, timesteps = 400):
