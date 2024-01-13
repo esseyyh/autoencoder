@@ -1,53 +1,98 @@
 import torch
 import torch.nn as nn
-from builder import block #,AttentionHead
+from torchsummary import summary
+#from builder import block,AttentionHead
+from builder import block
+from typing import List
 
 
 
-class decoder(nn.Module):
+
+class Decoder(nn.Module):
+    """Implements the encoder side of the Autoencoder."""
+
     def __init__(
         self,
-        fan_in: int=1,
-        fan_out: int=64,
-        channels: list  = [4,8],
-        resnet_layers_per_block: int = 1,
+        fan_in: int,
+        fan_out: int,
+        block_out_channels: List[int] = [4,8,16,32,64],
+        layers_per_block: int = 16,
+      
     ):
         super().__init__()
 
-        self.conv_in = nn.Conv2d(
-            fan_in,channels[0], kernel_size=3, stride=1, padding=1
-        )
+    
+
+
+       
+
+        self.conv_in = nn.Conv2d(fan_in,block_out_channels[-1],  3, padding=1)
 
 
 
-
-
-        self.up_blocks = [
+        self.mid_blocks = nn.ModuleList([
             block(
-                in_channels,
-                out_channels,
-                resnet_layers_per_block,
-                False,
-                True
-            )
-            for  in_channels, out_channels in zip(channels, channels[1:])
-        ]
-        #self.attn= attentionhead(144*144)
+                block_out_channels[-1],
+                block_out_channels[-1],
+                resnetlayer=layers_per_block,
+            ),
+            
+            block(
+                block_out_channels[-1],
+                block_out_channels[-1],
+                resnetlayer=layers_per_block,
+            ),
+            block(
+                block_out_channels[-1],
+                block_out_channels[-1],
+                resnetlayer=layers_per_block,
+            ),
+        ])
 
 
+        channels = list(reversed(block_out_channels))
+        channels = [channels[0]] + channels
+
+       
+        
+        self.up_blocks = nn.ModuleList([
+            block(in_channels,out_channels,resnetlayer=layers_per_block,down=False,up=i < len(block_out_channels) - 1)  
+            for i, (in_channels, out_channels) in enumerate(zip(channels, channels[1:]))
+        ])
+
+
+
+        self.conv_out = nn.Conv2d(
+              channels[-1],fan_out, kernel_size=3, stride=1, padding=1
+        )
+        
+
+        
+        
+
+        
+        self.act=nn.ReLU()
+
+    def forward(self, x):
+        x = self.conv_in(x)
+        
+        for l in self.mid_blocks:
+             x = l(x)
+             
+
+        for l in self.up_blocks:
+             x = l(x)
+
+
+        
+        
+
+        
+        
+        return self.conv_out(self.act(x))
         
 
 
 
-    def __call__(self, x):
-        x=self.conv_in(x)
-        for down in self.up_blocks:
-            x=down(x)
-       # x=self.attn(x)  
 
 
-        return x
-
-x=torch.randn(1,1,10,10)
-model=decoder()
-print(model(x).shape)

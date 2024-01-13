@@ -1,41 +1,43 @@
 import torch.nn as nn
 import torch
-
+from torchsummary import summary 
+import math
 
 class resnet(nn.Module):
-    """creates a resnet block with optional dimension reduction """
+    """ResNet block """
    
-    def __init__(self,in_channels: int,out_channels: int):
-       
+    def __init__(self,
+                 fan_in : int,
+                 fan_out: int
+                 ):
         super().__init__()
-        
-
-        
-        self.layer1=nn.Conv2d(in_channels, out_channels,kernel_size=3, stride=1, padding=1)
-
-        self.bn=nn.BatchNorm2d(in_channels)
-
-        self.layer2=nn.Conv2d(out_channels,out_channels,kernel_size=3,stride=1,padding= 1)
+        self.layer1=nn.Conv2d(fan_in, fan_out,kernel_size=3, stride=1, padding=1)
+        self.bn1=nn.BatchNorm2d(fan_in)
+        self.layer2=nn.Conv2d(fan_out,fan_out,kernel_size=3,stride=1,padding= 1) 
+        self.bn2=nn.BatchNorm2d(fan_out)
         self.act=nn.ReLU()
-
+        
+        self.proj_layer = nn.Conv2d(fan_in,fan_out, kernel_size=1, stride=1, padding=0)
 
     def forward(self,x):
-        out=self.layer1(x)
-
-        out=self.layer2(out)
+    
+        out=self.act(self.layer1(self.bn1(x)))
+        out=self.act(self.layer2(self.bn2(out)))
         
-        out=self.layer1(x)
 
-        out=self.layer2(out)
+        if self.proj_layer is not None:
+             return (out + (self.proj_layer(x)) )
+        else:
+            return (out +  x )
+            
 
-        out=out+x
         
-        return out
+            
 
 class block(nn.Module):
-    """ a simple block for convolutional block fro upsampling and downsampling """
+    """ a stack of resnet blocks for VAE """
     def __init__(self,
-                 fan_in:int,
+                 fan_in:int,    
                  fan_out:int,
                  resnetlayer :int,
                  down:bool = False,
@@ -46,10 +48,10 @@ class block(nn.Module):
         self.up=up
         self.start=nn.Conv2d(fan_in,fan_out,3,1,1)
 
-        self.res_layers = [resnet(fan_out,
+        self.res_layers = nn.ModuleList([resnet(fan_out,
                        fan_out) 
                        for i in range (resnetlayer)
-                       ]
+                       ])
         if down :
             self.down_step = nn.Conv2d(fan_out,fan_out,3,2,1)
         if up:
@@ -61,12 +63,17 @@ class block(nn.Module):
 
         for res in self.res_layers:
             x=res(x)
+          
+        
 
         if self.down:
-            out=self.down_step(x)
+            x=self.down_step(x)
         if self.up:
-            out=self.up_step(self.up_step_c(x))
-        return out
+            x=self.up_step(self.up_step_c(x))
+        return x
+
+
+
 
 
 
