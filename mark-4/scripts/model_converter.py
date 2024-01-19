@@ -158,6 +158,7 @@ def load_from_standard_weights(input_file: str, device: str) -> dict[str, torch.
 
 
 
+# print(summary(model,(4,64,64)))
 
 
    

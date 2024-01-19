@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
 from torchsummary import summary
-#from builder import block,AttentionHead
+
 from builder import block
 from typing import List
-
+from torchinfo import summary
 
 
 
@@ -13,10 +13,10 @@ class Decoder(nn.Module):
 
     def __init__(
         self,
-        fan_in: int,
-        fan_out: int,
-        block_out_channels: List[int] = [4,8,16,32,64],
-        layers_per_block: int = 16,
+        fan_in: int=4,
+        fan_out: int=3,
+        block_out_channels: List[int] = [128,256,512],
+        layers_per_block: int = 1,
       
     ):
         super().__init__()
@@ -56,7 +56,15 @@ class Decoder(nn.Module):
        
         
         self.up_blocks = nn.ModuleList([
-            block(in_channels,out_channels,resnetlayer=layers_per_block,down=False,up=i < len(block_out_channels) - 1)  
+
+             nn.Sequential(
+
+
+            block(in_channels,out_channels,resnetlayer=layers_per_block,down=False,up=False),
+            block(out_channels,out_channels,resnetlayer=layers_per_block,down=False,up=True)  
+
+             )
+             
             for i, (in_channels, out_channels) in enumerate(zip(channels, channels[1:]))
         ])
 
@@ -91,8 +99,5 @@ class Decoder(nn.Module):
         
         return self.conv_out(self.act(x))
         
-
-
-
 
 

@@ -11,6 +11,8 @@ import hydra
 from utils.data import ImageDataset
 from  src.autoencoder.ae import AE 
 from scripts.trainer import Trainer
+
+
 def ddp_setup(rank, world_size):
     """
     Args:
@@ -25,7 +27,7 @@ def ddp_setup(rank, world_size):
 
 
 def load_train_objs(cfg):
-    model = AE(cfg.model_params)
+    model = AE()
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR_1)
     return  model, optimizer
 

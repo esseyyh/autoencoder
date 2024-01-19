@@ -63,4 +63,13 @@ torch.save(model,"check.pt")
 
 
 
+models=preload_models_from_standard_weights2("/home/essey/v1-5-pruned-emaonly.ckpt","cpu")
+
+model=models["decoder"]
+torch.save(model,"check.pt")
+
+
+
+
+
 print(summary(model,(4,32,32)))

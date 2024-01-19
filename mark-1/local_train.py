@@ -14,7 +14,6 @@ from scripts.local_trainer import Trainer
 
 
 
-
 def ddp_setup(rank, world_size):
     """
     Args:

@@ -4,7 +4,7 @@ from torchsummary import summary
 #from builder import block,AttentionHead
 from builder import block,Attentionblock
 from typing import List
-
+from torchinfo import  summary
 
 
 
@@ -13,8 +13,8 @@ class Encoder(nn.Module):
 
     def __init__(
         self,
-        fan_in: int,
-        fan_out: int,
+        fan_in: int=3,
+        fan_out: int=8,
         channels: List[int] = [128,256,512],
         layers_per_block: int = 1,
         resnet_groups: int = 32,
@@ -61,7 +61,7 @@ class Encoder(nn.Module):
                 channels[-1],
                 resnetlayer=layers_per_block,
             ),
-            Attentionblock(512),
+            #Attentionblock(512),
         ])
 
 
@@ -74,7 +74,7 @@ class Encoder(nn.Module):
 
         self.act=nn.SiLU()
 
-    def forward(self, x,noise):
+    def forward(self, x,noise=0.01):
         x = self.conv_in(x)
 
         for l in self.down_blocks:
@@ -96,9 +96,3 @@ class Encoder(nn.Module):
 
         return z*0.18215
              
-        
-
-x=torch.randn(1,3,512,512)
-bloc=Encoder(3,8)
-
-print(bloc(x,1).shape)

@@ -6,9 +6,10 @@
 #SBATCH --partition=gpu
 #SBATCH --account=teach0013
 #SBATCH --exclusive 
+
+
 module load miniconda/3 -q
 module load cuda/11.4 -q
-
 conda activate check
 
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 -q
@@ -16,4 +17,5 @@ pip3 install hydra-core -q
 pip3 install numpy -q 
 pip3 install matplotlib -q
 pip3 install pillow -q
+
 python train_dis.py 1>out.txt 2>err.txt
