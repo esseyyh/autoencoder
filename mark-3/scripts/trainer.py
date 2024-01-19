@@ -10,7 +10,7 @@ import os
 import hydra
 import numpy as np
 from utils.data import ImageDataset
-from  src.auto import AE 
+from  src.autoencoder.ae  import AE 
 
 
 class Trainer:
@@ -24,33 +24,27 @@ class Trainer:
         self.model = DDP(model, device_ids=[gpu_id])
 
 
-    def _run_batch(self, data):
+    def _run_batch(self, data,epoch,gpu_id):
         self.optimizer.zero_grad()
 
-        data1 = data[:][0].to(self.gpu_id)
-        output = self.model(data1,True,False)
+        data1 = data[:].to(self.gpu_id)
+        output = self.model(data1)
         loss = F.mse_loss(output,data1)
         loss.backward()
         self.mean_train_loss.append(loss.item)
         self.optimizer.step()
 
         self.optimizer.zero_grad()
-        data2 = data[:][1].to(self.gpu_id)
-        output = self.model(data2,True,False)
-        loss = F.mse_loss(output,data2)
-        loss.backward()
-        self.mean_train_loss.append(loss.item)
-        self.optimizer.step()
-        #print(f"Loss : {loss }" )
+        print(f"{epoch} ,{gpu_id},{loss }" )
     def _run_epoch(self, epoch):
         b_sz = len(next(iter(self.train_data))[0])
-        print(f"[GPU{self.gpu_id}] Epoch {epoch} | Batchsize: {b_sz} | Steps: {len(self.train_data)}")
+        #print(f"[GPU{self.gpu_id}] Epoch {epoch} | Batchsize: {b_sz} | Steps: {len(self.train_data)}")
         self.train_data.sampler.set_epoch(epoch)
         self.mean_train_loss=[]
         for data in self.train_data:
             
-            self._run_batch(data)
-        print(f"loss : {np.mean(self.mean_train_loss)}")
+            self._run_batch(data,epoch,self.gpu_id)
+        #print(f"loss : {np.mean(self.mean_train_loss)}")
     def _run_test_batch(self, data):
         self.optimizer.zero_grad()
 
@@ -86,8 +80,6 @@ class Trainer:
     def train(self, max_epochs: int):
         for epoch in range(max_epochs):
             self._run_epoch(epoch)
-            if self.gpu_id == 0 and epoch % self.save_every == 0:
-                self._run_test_epoch(1)
-                self._save_checkpoint(epoch)
-
-
+            #if self.gpu_id == 0 and epoch % self.save_every == 0:
+                #self._run_test_epoch(1)
+                #self._save_checkpoint(epoch)

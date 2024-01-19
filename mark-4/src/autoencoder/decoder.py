@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from builder import VAE_AttentionBlock, Block
+from .builder import VAE_AttentionBlock, Block
 from torchsummary import summary
 
 

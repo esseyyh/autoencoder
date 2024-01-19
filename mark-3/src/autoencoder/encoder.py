@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
 from torchsummary import summary
-#from builder import block,AttentionHead
-from builder import block,Attentionblock
+from .builder import block,Attentionblock
 from typing import List
 from torchinfo import  summary
 

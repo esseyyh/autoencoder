@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torchsummary import summary
 
-from builder import block
+from .builder import block
 from typing import List
 from torchinfo import summary
 

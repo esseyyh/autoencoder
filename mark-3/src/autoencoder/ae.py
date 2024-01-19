@@ -1,11 +1,11 @@
 import torch 
 import torch.nn as nn
-from decoder import Decoder
-from encoder import Encoder
+from .decoder import Decoder
+from .encoder import Encoder
 from torchinfo import summary 
 from typing import List
 
-class VAE(nn.Module):
+class AE(nn.Module):
     
 
 
@@ -36,6 +36,3 @@ class VAE(nn.Module):
         
         return self.decoder(self.encoder(x))
     
-x=torch.randn(1,3,512,512)
-blok=VAE()
-summary(blok,input_data=x)

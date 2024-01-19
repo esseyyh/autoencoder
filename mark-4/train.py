@@ -9,8 +9,9 @@ from torch.distributed import init_process_group, destroy_process_group
 import os
 import hydra
 from utils.data import ImageDataset
-from  src.autoencoder.ae import AE 
+from src.autoencoder.ae import AE 
 from scripts.trainer import Trainer
+
 def ddp_setup(rank, world_size):
     """
     Args:
@@ -25,8 +26,8 @@ def ddp_setup(rank, world_size):
 
 
 def load_train_objs(cfg):
-    model = AE(cfg.model_params)
-    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.params.LR_1)
+    model = AE()
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.00001)
     return  model, optimizer
 
 
@@ -38,8 +39,8 @@ def prepare_dataloader(cfg):
     test_indices = torch.arange(len(dataset))[int(cfg.data.train_split * len(dataset)):]
     train_subset = Subset(dataset, train_indices)
     test_subset = Subset(dataset, test_indices)
-    train_loader = DataLoader(train_subset,pin_memory=True,shuffle=False, batch_size=cfg.data.batch_size,sampler=DistributedSampler(train_subset))
-    test_loader = DataLoader(test_subset, pin_memory=True, shuffle=False,batch_size=cfg.data.batch_size,sampler=DistributedSampler(test_subset))
+    train_loader = DataLoader(train_subset,pin_memory=True,shuffle=False, batch_size=1,sampler=DistributedSampler(train_subset))
+    test_loader = DataLoader(test_subset, pin_memory=True, shuffle=False,batch_size=1,sampler=DistributedSampler(test_subset))
 
     return train_loader,test_loader
 
@@ -49,8 +50,8 @@ def main(rank: int, world_size: int,cfg):
     ddp_setup(rank, world_size)
     model, optimizer = load_train_objs(cfg)
     train_data,test_data = prepare_dataloader(cfg)
-    trainer = Trainer(model, train_data, optimizer, rank, cfg.params.save_fre,cfg)
-    trainer.train(cfg.params.no_epoch)
+    trainer = Trainer(model, train_data,test_data, optimizer, rank, cfg.params.save_fre,cfg)
+    trainer.train(1)
     destroy_process_group()
 
 

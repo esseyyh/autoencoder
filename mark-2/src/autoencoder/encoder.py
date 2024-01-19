@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from builder import block
+from .builder import block
 from typing import List
 from torchinfo import  summary
 

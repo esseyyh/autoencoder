@@ -1,7 +1,7 @@
 import torch 
 import torch.nn as nn
-from decoder import Decoder
-from encoder import Encoder
+from .decoder import Decoder
+from .encoder import Encoder
 from torchinfo import summary
 from typing import List
 
