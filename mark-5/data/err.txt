@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/home/kunet.ae/100053688/autoencoder/autoencoder/mark-5/train.py", line 13, in <module>
+    from scripts.trainer import Trainer
+  File "/home/kunet.ae/100053688/autoencoder/autoencoder/mark-5/scripts/trainer.py", line 20
+    self.model.eval()
+TabError: inconsistent use of tabs and spaces in indentation
